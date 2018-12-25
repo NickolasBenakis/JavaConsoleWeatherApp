@@ -3,20 +3,21 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.Map;
+import java.lang.String;
 
-import org.json.simple.JSONObject;
+import com.oracle.javafx.jmx.json.JSONException;
+import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class Ergasia {
-
-
-
 
 
     // menu
@@ -27,7 +28,7 @@ public class Ergasia {
         Scanner input = new Scanner(System.in);
 
         while (control) {
-            System.out.println("Welcome to my Application");
+            System.out.println("\nWelcome to my Application");
             System.out.println("-------------------------");
             System.out.println("1 - Show Weather ");
             System.out.println("2 - About me");
@@ -47,8 +48,8 @@ public class Ergasia {
                     Pattern pattern = Pattern.compile("\\s");
                     Matcher matcher = pattern.matcher(city);
                     boolean found = matcher.find();
-                    if(found){
-                        city = city.replace("\\s","%20");
+                    if (found) {
+                        city = city.replace("\\s", "%20");
                     }
                     //End String Validation
                     System.out.println(getWeatherForCity(city));
@@ -58,14 +59,14 @@ public class Ergasia {
                             "Application Info:\n" +
                             "This is an Amazing Application\n" +
                             "Made By Nickolas Benakis\n" +
-                            ":)"+"\n***********");
+                            ":)" + "\n***********");
                     break;
                 case 3:
                     System.out.println("Bye Bye :)");
                     control = false;
                     break;
                 default:
-                    System.out.println("Invalid option");
+                    System.out.println("Invalid option, Try again please");
             }
         }
 
@@ -75,12 +76,11 @@ public class Ergasia {
 
     // get Weather
     public static String getWeatherForCity(String city) {
-        //  String name, country, description, res;
-        //  Float temp,humidity,windSpeed;
+        String name, country, res;
+        String description;
+        double temp, humidity, windSpeed;
         BufferedReader rd = null;
-        StringBuilder sb = null;
-        String line = null;
-
+        String inputLine = null;
 
 
         try {
@@ -96,21 +96,30 @@ public class Ergasia {
             connection.connect();
 
 
-
-
-
             // Read Response
             rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            sb = new StringBuilder();
-            while ((line = rd.readLine()) != null) {
-                sb.append(line + '\n');
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = rd.readLine()) != null) {
+                response.append(inputLine + '\n');
             }
+            rd.close();
 
-            // ftiaxnw to output na einai filiko gia ton user
-////            JSONParser parser = new JSONParser();
-//            Object obj = parser.parse(new );
-
-            return sb.toString();
+            //Read Json Response
+            JSONObject myResponse = new JSONObject(response.toString());
+            name = myResponse.getString("name");
+            country = myResponse.getJSONObject("sys").getString("country");
+            temp = myResponse.getJSONObject("main").getDouble("temp");
+            humidity = myResponse.getJSONObject("main").getDouble("humidity");
+            windSpeed = myResponse.getJSONObject("wind").getDouble("speed");
+            description = myResponse.getJSONArray("weather").getJSONObject(0).getString("description");
+//            System.out.println("Description : "+ description);
+//            System.out.println("City : " + name);
+//            System.out.println("Country : " + country);
+//            System.out.println("temp : " + temp);
+//            System.out.println("Humidity : " + humidity);
+//            System.out.println("Wind speed : " + windSpeed);
+            String finalRes = "Results : \nDescription : "+description+"\nCountry : "+country+"\nTemp : "+temp+"\nHumidity : "+humidity+"\nWindSpeed : "+windSpeed;
+            return finalRes;
 
         } catch (java.io.FileNotFoundException e) {
             System.out.println("Invalid City");
@@ -121,9 +130,11 @@ public class Ergasia {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (PatternSyntaxException e){
+        } catch (PatternSyntaxException e) {
             e.printStackTrace();
-        } catch (InputMismatchException e){
+        } catch (InputMismatchException e) {
+            e.printStackTrace();
+        } catch (org.json.JSONException e) {
             e.printStackTrace();
         }
         return "";
