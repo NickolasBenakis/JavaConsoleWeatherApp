@@ -79,7 +79,8 @@ public class Ergasia {
     public static String getWeatherForCity(String city) {
         String name, country, res;
         String description;
-        double temp, humidity, windSpeed;
+        double temp, windSpeed;
+        int tempCelcious, humidity;
         BufferedReader rd = null;
         String inputLine = null;
 
@@ -109,8 +110,9 @@ public class Ergasia {
             JSONObject myResponse = new JSONObject(response.toString());
             name = myResponse.getString("name");
             country = myResponse.getJSONObject("sys").getString("country");
-            temp = myResponse.getJSONObject("main").getDouble("temp");
-            humidity = myResponse.getJSONObject("main").getDouble("humidity");
+            temp = myResponse.getJSONObject("main").getDouble("temp") ;
+            tempCelcious = (int) Math.floor(temp -273.15);
+            humidity = (int) myResponse.getJSONObject("main").getDouble("humidity");
             windSpeed = myResponse.getJSONObject("wind").getDouble("speed");
             description = myResponse.getJSONArray("weather").getJSONObject(0).getString("description");
 //            System.out.println("Description : "+ description);
@@ -119,7 +121,13 @@ public class Ergasia {
 //            System.out.println("temp : " + temp);
 //            System.out.println("Humidity : " + humidity);
 //            System.out.println("Wind speed : " + windSpeed);
-            String finalRes = "Results : \nDescription : "+description+"\nCountry : "+country+"\nTemp : "+temp+"\nHumidity : "+humidity+"\nWindSpeed : "+windSpeed;
+            String finalRes ="/////////////////////\n"+"*****"+"Search Results For "+city+" \n*****Description : "
+                    +description+"\n*****Country : "
+                    +country+"\n*****Temp : "
+                    +tempCelcious+" Celcious \n*****Humidity : "
+                    +humidity+" % \n*****WindSpeed : "
+                    +windSpeed+" mph"
+                    +"\n/////////////////////";
             return finalRes;
 
         } catch (java.io.FileNotFoundException e) {
