@@ -2,8 +2,11 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.json.simple.JSONObject;
@@ -17,7 +20,7 @@ public class Ergasia {
 
 
     // menu
-    public static void menu()  {
+    public static void menu() {
         int selection;
         String city;
         boolean control = true;
@@ -31,19 +34,23 @@ public class Ergasia {
             System.out.println("3 - Exit");
             System.out.print("\nPress : ");
 
-            selection = input.nextInt();
 
+            selection = input.nextInt();
+            input.nextLine();
 
             switch (selection) {
                 case 1:
                     System.out.print("Enter the City: ");
                     city = input.next();
+                    input.nextLine();
                     //String Validation
-//                    if(city.matches("^\\s*$")){
-//                        city =city.replace("\\s+","%20");
-//                        control = false;
-//                        getWeatherForCity(city);
-//                    }
+                    Pattern pattern = Pattern.compile("\\s");
+                    Matcher matcher = pattern.matcher(city);
+                    boolean found = matcher.find();
+                    if(found){
+                        city = city.replace("\\s","%20");
+                    }
+                    //End String Validation
                     System.out.println(getWeatherForCity(city));
                     break;
                 case 2:
@@ -87,6 +94,11 @@ public class Ergasia {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
+
+
+
+
+
             // Read Response
             rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             sb = new StringBuilder();
