@@ -12,13 +12,14 @@ import java.util.regex.PatternSyntaxException;
 import java.util.Map;
 import java.lang.String;
 
-import com.oracle.javafx.jmx.json.JSONException;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
 
 public class Ergasia {
 
+    public static void main(String[] args){
+        menu();
+    }
 
     // menu
     public static void menu() {
@@ -102,7 +103,7 @@ public class Ergasia {
             while ((inputLine = rd.readLine()) != null) {
                 response.append(inputLine + '\n');
             }
-            rd.close();
+            //rd.close();
 
             //Read Json Response
             JSONObject myResponse = new JSONObject(response.toString());
@@ -133,6 +134,7 @@ public class Ergasia {
         } catch (PatternSyntaxException e) {
             e.printStackTrace();
         } catch (InputMismatchException e) {
+            System.out.println("OPA re");
             e.printStackTrace();
         } catch (org.json.JSONException e) {
             e.printStackTrace();
